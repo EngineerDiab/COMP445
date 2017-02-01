@@ -25,7 +25,7 @@ def httpc_post(url, header, data, verbose):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     url = urlparse(url)
     s.connect((url.hostname, 80))
-    request = "POST " + url.path + "\r\n" + header + "\r\n" + data + "\r\n"
+    request = "POST " + url.path + " HTTP/1.0" + "\r\n" + "Host: "+ url.hostname + "\r\n" + header + "\r\n" + "Content-Length: " + str(len(data)) + "\r\n" + "\r\n" + data
     s.sendall(request.encode("utf-8"))
     response = s.recv(4096)
     print(response.decode("utf-8"))
@@ -49,7 +49,7 @@ if args.get is not None:
     httpc_get(args.get, args.verbose)
 elif args.post is not None:
     if args.data is not None:
-        httpc_post(args.post, args.header, args.data,args.verbose)
+        httpc_post(args.post, args.header, args.data, args.verbose)
     elif args.file is not None:
         f = open(args.file, 'r')
         data = file.read()

@@ -10,13 +10,15 @@ def httpc_get(url, verbose):
     # NOT to connect! (So, you know, please don't dock marks for it... thanks!)
     url = urlparse(url)
     s.connect((url.hostname, 80))
-    if verbose:
-        request = "GET " + url.path + "?" + url.query + " HTTP/1.0\r\n\r\n"
-    else:
-        request = "GET " + url.path + "?" + url.query + " \r\n"
+    request = "GET " + url.path + "?" + url.query + " HTTP/1.0\r\n\r\n"
     s.sendall(request.encode("utf-8"))
-    response = s.recv(4096) 
-    print(response.decode("utf-8"))
+    response = s.recv(4096).decode("utf-8")
+    if not verbose:
+        response = response.split("\n")
+        for i in range(9,len(response)):
+            print(response[i])
+    else:
+        print(response)
     s.close
 
 
@@ -27,8 +29,13 @@ def httpc_post(url, header, data, verbose):
     s.connect((url.hostname, 80))
     request = "POST " + url.path + " HTTP/1.0" + "\r\n" + "Host: "+ url.hostname + "\r\n" + header + "\r\n" + "Content-Length: " + str(len(data)) + "\r\n" + "\r\n" + data
     s.sendall(request.encode("utf-8"))
-    response = s.recv(4096)
-    print(response.decode("utf-8"))
+    response = s.recv(4096).decode("utf-8")
+    if not verbose:
+        response = response.split("\n")
+        for i in range(9,len(response)):
+            print(response[i])
+    else:
+        print(response)
     s.close
 
 

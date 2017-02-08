@@ -54,7 +54,7 @@ verbose = parser.add_argument('-v', '--verbose', help='show verbose output',
 args = parser.parse_args()
 if args.get is not None:
     httpc_get(args.get, args.verbose)
-elif args.post is not None:
+elif args.post is not None and args.header is not None:
     if args.data is not None:
         httpc_post(args.post, args.header, args.data, args.verbose)
     elif args.file is not None:
@@ -62,4 +62,11 @@ elif args.post is not None:
         data = file.read()
         f.close()
         httpc_post(args.post, args.header, data, args.verbose)
-
+    else:
+        print("error: expected either a data string (-d) or file (-f) for post request.")
+        parser.print_help()
+elif args.post is not None and args.header is None:
+    print("error: expected a header (--header) for post request.")
+    parser.print_help()
+else:
+    parser.print_help()

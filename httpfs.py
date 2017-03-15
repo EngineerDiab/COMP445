@@ -1,9 +1,11 @@
 import socket
 import argparse
-
+import os
 
 host = ''
 port = 8888
+localPath = os.path.dirname(os.path.realpath(__file__))
+
 listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 listener.bind((host, port))
@@ -20,9 +22,13 @@ while True:
     # differentiate GET and POST
     if getVsPost == 'GET':
         print("this is a GET request!")
+        if path == "/":
+            fileList = os.listdir(localPath + path)
+            for file in fileList:
+                print(file)
     elif getVsPost == 'POST':
         print("this is a POST request!")
-    print("the path is", path)
+    
 
     response = b"""\
             Hello, World!

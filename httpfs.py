@@ -35,8 +35,9 @@ while True:
             response = fileSpecific.read()
             fileSpecific.close()
     elif getVsPost == 'POST':
-        print("this is a POST request!")
-        print(data)
+        fileSpecific = open(localPath + path, 'w')
+        fileSpecific.write(data)
+        fileSpecific.close()
     
     connection.sendall(bytes(response, "utf-8"))
     connection.close()

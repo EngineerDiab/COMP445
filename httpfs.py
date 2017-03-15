@@ -19,6 +19,10 @@ localPath = os.path.dirname(os.path.realpath(__file__))
 if args.directory is not None:
     localPath = args.directory
 
+# set uplist of valid files, remove httpfs.py from said list
+fileList = os.listdir(localPath)
+fileList.remove("httpfs.py")
+
 listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 listener.bind((host, port))
@@ -32,27 +36,29 @@ while True:
     getVsPost = getVsPostLine[0]
     path = getVsPostLine[1]
     separatorLine = request.index('')
-    data = ''
+    data = ""
     for line in request[separatorLine+1:]:
         data += line + "\n"
-    response = ''
+    response = ""
 
     if getVsPost == 'GET':
         if path == "/":
-            fileList = os.listdir(localPath + path)
             for file in fileList:
                 response += file + "\n"
         else:
-            if os.path.exists(localPath+path):
+            if path[1:] in fileList:
                 fileSpecific = open(localPath + path, 'r')
                 response = fileSpecific.read()
                 fileSpecific.close()
             else:
-                response = '404'
+                response = "404"
     elif getVsPost == 'POST':
-        fileSpecific = open(localPath + path, 'w')
-        fileSpecific.write(data)
-        fileSpecific.close()
+        if path[1:] in fileList:
+            fileSpecific = open(localPath + path, 'w')
+            fileSpecific.write(data)
+            fileSpecific.close()
+        else:
+            response = "403"
     
     connection.sendall(bytes(response,"utf-8"))
     connection.close()

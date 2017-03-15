@@ -18,7 +18,10 @@ while True:
     getVsPostLine = request[0].split()
     getVsPost = getVsPostLine[0]
     path = getVsPostLine[1]
-
+    separatorLine = request.index('')
+    data = ''
+    for line in request[separatorLine+1:]:
+        data += line + "\n"
     response = ''
 
     # differentiate GET and POST
@@ -26,13 +29,14 @@ while True:
         if path == "/":
             fileList = os.listdir(localPath + path)
             for file in fileList:
-                print(file)
+                response += file + "\n"
         else:
             fileSpecific = open(localPath + path, 'r')
             response = fileSpecific.read()
             fileSpecific.close()
     elif getVsPost == 'POST':
         print("this is a POST request!")
+        print(data)
     
     connection.sendall(bytes(response, "utf-8"))
     connection.close()

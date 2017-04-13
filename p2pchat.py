@@ -6,6 +6,7 @@ from datetime import datetime
 
 def sender(username, ip, port):
     global userList
+    global quitReceiver
     # set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -17,7 +18,9 @@ def sender(username, ip, port):
         userMsg = input()
         command = 'talk'
         if userMsg == '/leave':
-            command = 'leave'
+            appMsg = buildMsg(username, 'quit', userMsg)
+            s.sendto(appMsg.encode('utf-8'), ('localhost', port))
+            command = 'leave' 
             running = False
         if userMsg == '/who':
             print('users:', userList)
@@ -30,11 +33,12 @@ def buildMsg(username, command, userMsg):
         
 def receiver(username, ip, port):
     global userList
+    running = True
     # set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind(('', port))
     print("logged on to port", port)
-    while True:
+    while running:
         appMsg = s.recv(4096)
         (user, command, userMsg) = parseMsg(appMsg)
         if command == 'talk':
@@ -44,8 +48,8 @@ def receiver(username, ip, port):
             userList += [user]
         if command == 'leave':
             print(datetime.now(), user, 'left...')
-            s.sendto("Bye Now!", (ip, port))
-
+        if command == 'quit':
+            print("bye bye!")
 
 def parseMsg(appMsg):
     appMsg = appMsg.decode('utf-8')
@@ -56,6 +60,7 @@ def parseMsg(appMsg):
     return (username, command, userMsg)
 
 
+quitReceiver = False
 userList = []
 name = input('enter your name: ')
 p2 = os.fork()

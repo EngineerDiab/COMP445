@@ -2,14 +2,28 @@ import socket
 import os
 import threading
 
-def receiver(username, ip, port):
+def sender(username, ip, port):
     # set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind((ip,port))
+    s.bind((ip, port))
     print("serving on port", port)
     while True:
-        appMsg = s.recv(1024)
+        user_message = input()
+        application_message = build_message(user_message, username)
+        s.sendto(application_message.encode('utf-8'), (ip, port))
+
+def build_message(user_message, user_name):
+    return 'user: ' + user_name + '\nmessage: ' + user_message + '\n\n'
+        
+def receiver(username, ip, socket):
+    # set up socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((ip, port))
+    print("serving on port", port)
+    while True:
+        appMsg = s.recv(4096)
         (username, userMsg) = parseMsg(appMsg)
         print(username, userMsg)
 
@@ -19,16 +33,11 @@ def parseMsg(appMsg):
     userMsg = appMsg[1]
     return (username, userMsg)
 
-def build_message(user_message, user_name):
-    return 'user: ' + user_name + '\nmessage: ' + user_message + '\n\n'
+p2 = os.fork()
+if p2 == 0:
+    sender('bobby', 'localhost', 1337)
+else:
+    receiver('bobby', 'localhost', 1337)
 
-def sender(user_name, ip_address, port):
-    # set up socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind((host, port))
-    print("serving on port", port)
-    while True:
-        user_message = input()
-        application_message = build_message(user_message, user_name)
-        s.sendto(application_message, ip_address, port)
+while True:
+    pass

@@ -3,11 +3,14 @@ import os
 import threading
 from datetime import datetime
 
+
 def sender(username, ip, port):
+    global userList
     # set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     joinMsg = buildMsg(username, 'join', '')
+    userList += [username]
     s.sendto(joinMsg.encode('utf-8'), (ip, port))
     running = True
     while running:
@@ -16,13 +19,17 @@ def sender(username, ip, port):
         if userMsg == '/leave':
             command = 'leave'
             running = False
-        appMsg = buildMsg(username, command, userMsg)
-        s.sendto(appMsg.encode('utf-8'), (ip, port))
+        if userMsg == '/who':
+            print('users:', userList)
+        else:
+            appMsg = buildMsg(username, command, userMsg)
+            s.sendto(appMsg.encode('utf-8'), (ip, port))
 
 def buildMsg(username, command, userMsg):
     return username + '\n' + command + '\n' + userMsg
         
 def receiver(username, ip, port):
+    global userList
     # set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind(('', port))
@@ -34,6 +41,7 @@ def receiver(username, ip, port):
             print(datetime.now(),' [', user,']: ', userMsg, sep='')
         if command == 'join':
             print(datetime.now(), user, 'joined!')
+            userList += [user]
         if command == 'leave':
             print(datetime.now(), user, 'left...')
 
@@ -46,6 +54,7 @@ def parseMsg(appMsg):
     return (username, command, userMsg)
 
 
+userList = []
 name = input('enter your name: ')
 p2 = os.fork()
 if p2 == 0:

@@ -44,6 +44,8 @@ def receiver(username, ip, port):
             userList += [user]
         if command == 'leave':
             print(datetime.now(), user, 'left...')
+            s.sendto("Bye Now!", (ip, port))
+
 
 def parseMsg(appMsg):
     appMsg = appMsg.decode('utf-8')

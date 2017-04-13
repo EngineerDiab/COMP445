@@ -49,7 +49,7 @@ def parseMsg(appMsg):
 name = input('enter your name: ')
 p2 = os.fork()
 if p2 == 0:
-    receiver(name, '<broadcast>', 1337)
+    receiver(name, '', 1337)
 else:
-    sender(name, '', 1337)
+    sender(name, '<broadcast>', 1337)
 

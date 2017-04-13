@@ -36,7 +36,6 @@ def receiver(username, ip, port):
             print(datetime.now(), user, 'joined!')
         if command == 'leave':
             print(datetime.now(), user, 'left...')
-            s.sendto("Bye Now!", (ip, port))
 
 
 def parseMsg(appMsg):

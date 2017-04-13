@@ -25,9 +25,8 @@ def buildMsg(username, command, userMsg):
 def receiver(username, ip, port):
     # set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind((ip, port))
+    s.bind(('', port))
     print("logged on to port", port)
-    userlist = []
     while True:
         appMsg = s.recv(4096)
         (user, command, userMsg) = parseMsg(appMsg)
@@ -35,7 +34,6 @@ def receiver(username, ip, port):
             print(datetime.now(),' [', user,']: ', userMsg, sep='')
         if command == 'join':
             print(datetime.now(), user, 'joined!')
-            userlist.add(user)
         if command == 'leave':
             print(datetime.now(), user, 'left...')
 
@@ -51,7 +49,7 @@ def parseMsg(appMsg):
 name = input('enter your name: ')
 p2 = os.fork()
 if p2 == 0:
-    receiver(name, '255.255.255.255', 1337)
+    receiver(name, '<broadcast>', 1337)
 else:
-    sender(name, '255.255.255.255', 1337)
+    sender(name, '', 1337)
 

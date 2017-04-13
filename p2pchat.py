@@ -41,10 +41,13 @@ def receiver(username, ip, port):
             print(datetime.now(),' [', user,']: ', userMsg, sep='')
         if command == 'join':
             print(datetime.now(), user, 'joined!')
+            print('potato')
             userList += [user]
+            command == 'potato'
         if command == 'leave':
             print(datetime.now(), user, 'left...')
-
+        if command == 'potato':
+            userList += [user]
 
 def parseMsg(appMsg):
     appMsg = appMsg.decode('utf-8')

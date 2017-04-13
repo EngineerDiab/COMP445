@@ -6,6 +6,7 @@ from datetime import datetime
 def sender(username, ip, port):
     # set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1) 
     print("sending on port", port)
     while True:
         user_message = input()
@@ -35,7 +36,7 @@ def parseMsg(appMsg):
 
 p2 = os.fork()
 if p2 == 0:
-    receiver('bobby', 'localhost', 1337)
+    receiver('bobby', '255.255.255.255', 1337)
 else:
-    sender('bobby', 'localhost', 1337)
+    sender('bobby', '255.255.255.255', 1337)
 
